@@ -1,0 +1,21 @@
+
+.start-screen{
+    background-color: #404040;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    button{
+        width: 10vw;
+        height: 10vh;
+        border-radius: 10px;
+        font-size: 32px;
+        cursor: pointer;
+        &:hover{
+            background-color: rgba(232, 157, 17, 0.2);
+        }
+    }
+
+}
