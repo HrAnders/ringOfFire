@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Game } from 'src/models/game';
+import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import {NgIf} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {FormsModule} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 
 @Component({
   selector: 'app-game',
@@ -16,7 +23,7 @@ export class GameComponent implements OnInit {
     currentPlayer: 0
   };
 
-  constructor(){}
+  constructor(public dialog: MatDialog){}
 
   ngOnInit(): void {
     this.newGame();
@@ -39,5 +46,13 @@ export class GameComponent implements OnInit {
     }, 1000);}
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(DialogAddPlayerComponent);
+
+    dialogRef.afterClosed().subscribe(name => {
+      console.log('The dialog was closed', name);
+      this.game.players.push(name);
+    });
+  }
   
 }
