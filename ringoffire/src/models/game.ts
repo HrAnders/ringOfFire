@@ -14,8 +14,7 @@ export class Game{
         }
         shuffle(this.stack);
     }
-
-    
+  
 }
 
 function shuffle(array:string[]) {
