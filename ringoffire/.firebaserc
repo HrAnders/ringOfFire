@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ringoffire-6a441": {
+      "hosting": {
+        "ringoffire": [
+          "ringoffire-6a441"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ringoffire-6a441"
+  }
+}

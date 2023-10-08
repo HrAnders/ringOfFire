@@ -54,6 +54,7 @@
 .player-position{
   position: absolute;
   right: 0;
+  z-index: 1;
 }
 
 .btn-add{
@@ -67,5 +68,15 @@
   bottom: 32px;
   left: 100px;
   right: 100px;
+}
+
+.bg-img{
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  top:0;
+  left: 0;
+  z-index: -5;
 }
 
