@@ -2,7 +2,8 @@
   *ngFor="let player of game.players; let i = index"
   [ngStyle]="{'top.px':100+(i*100)}"
   [playerActive]="i==game.currentPlayer"
-  [name]="player" 
+  [name]="player"
+  [avatar]="game.avatarId[i]"
   class="player-position"
 ></app-player>
 <!--player variable value from ngFor is given to the player component. There it is used for player names-->

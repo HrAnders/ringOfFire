@@ -3,10 +3,33 @@
   <p>Please enter new players name.</p>
   <mat-form-field>
     <mat-label>Your name:</mat-label>
-    <input matInput [(ngModel)]="name">
+    <input matInput [(ngModel)]="name" />
   </mat-form-field>
 </div>
+
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Choose your avatar</mat-label>
+    <mat-select matInput [(ngModel)]="selectedAvatar">
+      <mat-option *ngFor="let avatar of avatars" [value]="avatar.value">
+        <div class="flex">
+          <img class="avatar" src="{{ avatar.viewValue }}" alt="" />
+          <span>{{avatar.name}}</span>
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [disabled]="name.length == 0" [mat-dialog-close]="name" cdkFocusInitial>Ok</button>
+  <button
+    mat-button
+    [disabled]="name.length == 0 || !selectedAvatar"
+    (click)="sendPlayerData()"
+    [mat-dialog-close]="name + selectedAvatar"
+    cdkFocusInitial
+  >
+    Ok
+  </button>
 </div>

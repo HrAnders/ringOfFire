@@ -8,8 +8,15 @@ import { Component, Input, OnInit } from '@angular/core';
 export class PlayerComponent implements OnInit {
   @Input() name: any;
   @Input() playerActive: boolean = false;
+  @Input() avatar: any = '';
 
   ngOnInit(): void {
     
+  }
+
+
+  getRandomAvatar(){
+    const randomNumber = Math.floor(Math.random() * (50 - 1 + 1)) + 1;
+    this.avatar = 'assets/img/avatars_withbg/' + randomNumber + '.png';
   }
 }

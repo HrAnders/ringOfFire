@@ -13,12 +13,21 @@ export class StartScreenComponent implements OnInit {
 
   firestore: Firestore = inject(Firestore);
 
+  mainTheme: any = new Audio();
+
   constructor(private router: Router, private util:GameComponent){
     
   }
 
   ngOnInit(): void {
-    
+    this.mainTheme.src = "./../assets/audio/main-theme.mp3";
+    this.mainTheme.load();
+    this.mainTheme.loop = true;
+    this.mainTheme.play();
+  }
+
+  ngOnDestroy(): void {
+    this.mainTheme.pause();
   }
 
   async newGame(){

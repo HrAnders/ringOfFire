@@ -1,10 +1,21 @@
+export class Player {
+    public id: number;
+    public name: string;
+
+    constructor(id: number, name: string) {
+        this.id = id;
+        this.name = name;
+    }
+}
 export class Game{
-    public players: string[] = [];
+    //public players: Player[] = [];
+    public players: string[] = []; 
     public stack: string[] = [];
     public playedCards: string[] = [];
     public currentPlayer: number = 0;
     public pickCardAnimation = false;
     public currentCard: string = '';
+    public avatarId: string = '';
 
 
     constructor(){
@@ -24,7 +35,8 @@ export class Game{
             playedCards: this.playedCards,
             currentPlayer: this.currentPlayer,
             pickCardAnimation: this.pickCardAnimation,
-            currentCard: this.currentCard
+            currentCard: this.currentCard,
+            avatarId: this.avatarId,
         }
     }
   

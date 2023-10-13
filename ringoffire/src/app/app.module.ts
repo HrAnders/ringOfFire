@@ -18,6 +18,7 @@ import {MatCardModule} from '@angular/material/card';
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideFirestore,getFirestore } from '@angular/fire/firestore';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -27,7 +28,7 @@ import { provideFirestore,getFirestore } from '@angular/fire/firestore';
     GameComponent,
     PlayerComponent,
     DialogAddPlayerComponent,
-    GameInfoComponent
+    GameInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,6 +39,7 @@ import { provideFirestore,getFirestore } from '@angular/fire/firestore';
     MatIconModule,
     MatDialogModule,
     MatInputModule,
+    MatSelectModule,
     MatCardModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore())
