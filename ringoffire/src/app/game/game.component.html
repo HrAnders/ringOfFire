@@ -1,29 +1,55 @@
-<app-player
-  *ngFor="let player of game.players; let i = index"
-  [ngStyle]="{'top.px':100+(i*100)}"
-  [playerActive]="i==game.currentPlayer"
-  [name]="player"
-  [avatar]="game.avatarId[i]"
-  class="player-position"
-></app-player>
-<!--player variable value from ngFor is given to the player component. There it is used for player names-->
+<div class="player-container">
+  <app-player
+    *ngFor="let player of game.players; let i = index"
+    [ngStyle]="{ 'top.px': isSmallScreen ? 100 + i * 60 : 100 + i * 100 }"
+    [playerActive]="i == game.currentPlayer"
+    [name]="player"
+    [avatar]="game.avatarId[i]"
+    class="player-position hide-mobile"
+  ></app-player>
+</div>
+
+<div class="player-container-mobile">
+  <ng-container *ngFor="let player of game.players; let i = index">
+    <app-player-mobile
+      [ngStyle]="{ 'left.px': 20 + i * 20, 'top.px': 0 }"
+      [playerActive]="i == game.currentPlayer"
+      [name]="player"
+      [avatar]="game.avatarId[i]"
+      class="player-position hide-desktop"
+      *ngIf="i == game.currentPlayer"
+    ></app-player-mobile>
+  </ng-container>
+</div>
 
 <div class="field">
   <div class="card-stack">
     <!--Card stack-->
-    <img
-      *ngFor="let c of [0, 1, 2, 3]; let i = index"
-      [ngStyle]="{ 'right.px': i * 5 }"
-      src="assets/img/playing_cards-master/card_cover.png"
-      alt=""
-    />
+    <button
+      mat-fab
+      color="primary"
+      (click)="shuffleAndResetCards()"
+      class="btn-shuffle"
+      *ngIf="game.stack.length == 0"
+    >
+      <mat-icon>shuffle</mat-icon>
+    </button>
+    <div *ngIf="game.stack.length > 0">
+      <img
+        *ngFor="let c of [0, 1, 2, 3]; let i = index"
+        [ngStyle]="{ 'right.px': i * 5 }"
+        src="assets/img/playing_cards-master/card_cover.png"
+        alt=""
+      />
+    </div>
+    <div *ngIf="game.stack.length > 0">
     <img
       (click)="takeCard()"
       class="top-card"
       style="right: 25px"
       src="assets/img/playing_cards-master/card_cover.png"
       alt=""
-    />
+    /></div>
 
     <!--Stack for played cards-->
     <img
@@ -45,10 +71,12 @@
   </div>
 </div>
 
-<app-game-info [card]="game.currentCard" class="pin-bottom"></app-game-info>
+<div class="info-container">
+  <app-game-info [card]="game.currentCard" class="pin-bottom"></app-game-info>
 
-<button mat-fab color="primary" (click)="openDialog()" class="btn-add">
-  <mat-icon>add</mat-icon>
-</button>
+  <button mat-fab color="primary" (click)="openDialog()" class="btn-add">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
 
-<img class="bg-img" src="./../../assets/img/tabletop_bg.jpg" alt="">
+<img class="bg-img" src="./../../assets/img/tabletop_bg.jpg" alt="" />

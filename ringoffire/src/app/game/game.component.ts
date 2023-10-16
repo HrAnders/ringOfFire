@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit, inject } from '@angular/core';
+import { Component, Injectable, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   Firestore,
   collectionData,
@@ -23,6 +23,8 @@ import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player
 import { BehaviorSubject, Observable } from 'rxjs';
 import { onSnapshot } from '@firebase/firestore';
 import { ActivatedRoute } from '@angular/router';
+import { AddingPlayerService } from '../add-player-service/adding-player.service';
+
 
 @Component({
   selector: 'app-game',
@@ -30,15 +32,15 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./game.component.scss'],
 })
 @Injectable()
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
   game: Game = new Game();
-
   unsubGamesList;
   unsubSingleDoc;
   currentId: string = '';
   firestore: Firestore = inject(Firestore);
+  isSmallScreen: boolean = false;
 
-  constructor(private route: ActivatedRoute, public dialog: MatDialog) {
+  constructor(private route: ActivatedRoute, public dialog: MatDialog, private addingPlayerService: AddingPlayerService) {
     this.unsubGamesList = onSnapshot(this.getGamesRef(), (list: any) => {
       list.forEach((element: any) => {
         //console.log(element.data());
@@ -51,11 +53,16 @@ export class GameComponent implements OnInit {
     );
   }
 
-
-
   ngOnInit(): void {
     //route gibt url-rest zurück --> dieser ist gleichzeitig die firebase-id und kann
     // so über einen snapshot-listener das zugehörige spiel anzeigen und updaten
+
+
+    this.checkScreenSize();
+    window.addEventListener('resize', () => {
+      this.checkScreenSize();
+    });
+    
     this.route.params.subscribe((params) => {
       this.unsubSingleDoc = onSnapshot(
         this.getSingleDocRef('games', params['id']),
@@ -66,31 +73,15 @@ export class GameComponent implements OnInit {
           if (gameData) {
             this.game.currentPlayer = gameData['currentPlayer'];
             this.game.playedCards = gameData['playedCards'];
-            this.game.players = this.getNames(gameData['players']);
+            this.game.players = (gameData['players']);
             this.game.stack = gameData['stack'];
             this.game.pickCardAnimation = gameData['pickCardAnimation'];
             this.game.currentCard = gameData['currentCard'];
-            this.game.avatarId = this.getAvatars(gameData['players']);;
+            this.game.avatarId = (gameData['avatarId']);
           }
         }
       );
     });
-  }
-
-  getNames(playersList: any) {
-    const namesArray = playersList.map((jsonString: string) => {
-      const jsonObject = JSON.parse(jsonString);
-      return jsonObject.name;
-    });
-    return namesArray;
-  }
-
-  getAvatars(playersList: any){
-    const avatarArray = playersList.map((jsonString: string) => {
-      const jsonObject = JSON.parse(jsonString);
-      return jsonObject.avatars;
-    });
-    return avatarArray;
   }
 
   ngOnDestroy(): void {
@@ -131,44 +122,80 @@ export class GameComponent implements OnInit {
     }
   }
 
-  takeCard() {
-    if (!this.game.pickCardAnimation) {
-      this.game.currentCard = this.game.stack.pop()!;
-      this.game.pickCardAnimation = true;
-      //console.log(this.game.playedCards);
-
-      this.game.currentPlayer++;
-      this.game.currentPlayer =
-        this.game.currentPlayer % this.game.players.length;
-
-      this.updateGame();
-
-      setTimeout(() => {
-        this.game.playedCards.push(this.game.currentCard);
-        this.game.pickCardAnimation = false;
-        this.updateGame();
-      }, 1000);
-    }
+  checkScreenSize() {
+    this.isSmallScreen = window.innerWidth <= 930; // Hier können Sie den gewünschten Schwellenwert für geringere Bildschirmgröße festlegen
   }
 
-  async addPlayer(playerData: string, id: string) {
-    this.currentId = id;
-    console.log('addPlayer executed, playerData:', playerData);
-    console.log('currentID:', this.currentId);
-    this.game.players.push(playerData);
+  takeCard() {
+    if (this.game.players.length < 2) {
+      console.log("Please add some players to the game")
+    }
+    else{
+      if (!this.game.pickCardAnimation && this.game.stack.length>0 ) {
+        this.playSound('./../assets/audio/cardFlip.mp3')
+        this.game.currentCard = this.game.stack.pop()!;
+        this.game.pickCardAnimation = true;
+        //console.log(this.game.playedCards);
+  
+        this.game.currentPlayer++;
+        this.game.currentPlayer =
+          this.game.currentPlayer % this.game.players.length;
+  
+        this.updateGame();
+  
+        setTimeout(() => {
+          this.game.playedCards.push(this.game.currentCard);
+          this.game.pickCardAnimation = false;
+          this.updateGame();
+        }, 1000);
+      }
+    }
+    
+  }
 
-    await this.updateGame();
+  shuffleAndResetCards() {
+    this.playSound('./../assets/audio/shuffleCards.mp3')
+    if (!this.game.pickCardAnimation) {
+      // Füge alle Karten aus playedCards in den Stack ein
+      this.game.stack.push(...this.game.playedCards);
+  
+      // Mische die Karten im Stack zufällig
+      this.shuffleArray(this.game.stack);
+  
+      // Leere playedCards
+      this.game.playedCards = [];
+  
+      // Aktualisiere das Spiel in der Firebase-Datenbank
+      this.updateGame();
+    }
+  }
+  
+  // Hilfsfunktion zum Mischen eines Arrays (Fisher-Yates-Algorithmus)
+  shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+  
+  playSound(soundSrc:any){
+    const sound = new Audio();
+    sound.src = soundSrc;
+    sound.load();
+    sound.play();
   }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
 
-    dialogRef.afterClosed().subscribe(() => {
-      //name in subscription!?
-      /* if (name && name.length > 0) {
-        this.game.players.push(name);
+    dialogRef.afterClosed().subscribe((player) => {
+      if (player) {
+        console.log('Received player:', player);
+        this.game.players.push(player.name);
+        this.game.avatarId.push(player.id);
         this.updateGame();
-      } */
+      }
     });
   }
+
 }

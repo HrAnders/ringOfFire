@@ -1,12 +1,4 @@
-export class Player {
-    public id: number;
-    public name: string;
 
-    constructor(id: number, name: string) {
-        this.id = id;
-        this.name = name;
-    }
-}
 export class Game{
     //public players: Player[] = [];
     public players: string[] = []; 
@@ -15,7 +7,7 @@ export class Game{
     public currentPlayer: number = 0;
     public pickCardAnimation = false;
     public currentCard: string = '';
-    public avatarId: string = '';
+    public avatarId: number[] = [];
 
 
     constructor(){

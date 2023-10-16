@@ -34,9 +34,16 @@ export class GameInfoComponent implements OnInit, OnChanges {
       description:
         'Pick a mate. Your mate must always drink when you drink and the other way around.',
     },
-    { title: 'Thumbmaster', description: '' },
+    {
+      title: 'Toast',
+      description: 'Toast Player that drew toast and everyone drinks.',
+    },
     { title: 'Men', description: 'All men drink.' },
-    { title: 'Quizmaster', description: '' },
+    {
+      title: 'Bust a rhyme',
+      description:
+        'Every player after that has to rhyme a word with the word of the player before them. The first player to hesitate, mess up or to repeat a word that has already been said drinks.',
+    },
     {
       title: 'Never have i ever...',
       description:

@@ -14,7 +14,7 @@
       <mat-option *ngFor="let avatar of avatars" [value]="avatar.value">
         <div class="flex">
           <img class="avatar" src="{{ avatar.viewValue }}" alt="" />
-          <span>{{avatar.name}}</span>
+          <span>{{ avatar.name }}</span>
         </div>
       </mat-option>
     </mat-select>
@@ -26,8 +26,7 @@
   <button
     mat-button
     [disabled]="name.length == 0 || !selectedAvatar"
-    (click)="sendPlayerData()"
-    [mat-dialog-close]="name + selectedAvatar"
+    (click)="setPlayer()"
     cdkFocusInitial
   >
     Ok

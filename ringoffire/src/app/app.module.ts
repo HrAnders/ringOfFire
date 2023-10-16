@@ -19,6 +19,8 @@ import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideFirestore,getFirestore } from '@angular/fire/firestore';
 import { MatSelectModule } from '@angular/material/select';
+import { AddingPlayerService } from './add-player-service/adding-player.service';
+import { AppPlayerMobileComponent } from './app-player-mobile/app-player-mobile.component';
 
 
 @NgModule({
@@ -29,7 +31,7 @@ import { MatSelectModule } from '@angular/material/select';
     PlayerComponent,
     DialogAddPlayerComponent,
     GameInfoComponent,
-  ],
+    AppPlayerMobileComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -44,7 +46,7 @@ import { MatSelectModule } from '@angular/material/select';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore())
   ],
-  providers: [GameComponent],
+  providers: [GameComponent, AddingPlayerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

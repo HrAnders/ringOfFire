@@ -1,13 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { NgFor } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { GameComponent } from '../game/game.component';
-import { AddService } from '../add-service/add.service';
-import { ActivatedRoute } from '@angular/router';
+import { AddingPlayerService, Player } from '../add-player-service/adding-player.service';
 
 interface Avatar {
   value: number;
@@ -22,32 +16,28 @@ interface Avatar {
 export class DialogAddPlayerComponent implements OnInit {
   name: string = '';
   avatars: Avatar[] = [];
-  selectedAvatar: any;
-  currentId!: any;
+  selectedAvatar: number = 0;
+  player: Player = new Player();
 
   constructor(
     public dialogRef: MatDialogRef<DialogAddPlayerComponent>,
-    private route: ActivatedRoute,
-    public gameComponent: GameComponent
+    private addingPlayerService: AddingPlayerService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.getCurrentId();
     this.getAvatarImages();
+  }
+
+  async setPlayer() {
+    this.player.name = this.name;
+    this.player.id = this.selectedAvatar;
+    //this.addingPlayerService.addPlayer(this.player); // potentially for later expansion of player class
+    this.dialogRef.close(this.player); //beim Schließen des Dialogs wird das erstellte player-Objekt returned
+    //die game-component kann dann durch die subscription darauf zugreifen
   }
 
   onNoClick() {
     this.dialogRef.close();
-  }
-
-  async sendPlayerData() {
-    let newPlayer = { name: this.name, avatars: this.selectedAvatar };
-    let stringData = JSON.stringify(newPlayer);
-    await this.gameComponent.addPlayer(stringData, this.currentId);
-  }
-
-  async getCurrentId() {
-    this.currentId = localStorage.getItem('id');
   }
 
   getAvatarImages() {
@@ -59,6 +49,8 @@ export class DialogAddPlayerComponent implements OnInit {
       });
     }
   }
+
+ 
 
   names = [
     'Elowen',

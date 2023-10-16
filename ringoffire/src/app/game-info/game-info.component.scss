@@ -1,0 +1,19 @@
+@media (max-width: 820px) {
+  .mat-mdc-card {
+    height: 15vh !important;
+  }
+  .mat-mdc-card-content{
+    overflow-y: auto;
+  }
+
+  ::-webkit-scrollbar
+{
+	width: 10px;
+}
+
+::-webkit-scrollbar-thumb
+{
+	background-color: orange;
+	border-radius: 10px;
+}
+}
