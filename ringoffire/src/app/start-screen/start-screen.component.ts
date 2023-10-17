@@ -31,7 +31,7 @@ export class StartScreenComponent implements OnInit {
    * This function handles the main theme playing
    */
   playTheme(){
-    this.mainTheme.src = "./../assets/audio/main-theme.mp3";
+    this.mainTheme.src = "./assets/audio/main-theme.mp3";
     this.mainTheme.load();
     this.mainTheme.loop = true;
     this.mainTheme.play();

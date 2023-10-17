@@ -199,7 +199,7 @@ export class GameComponent implements OnInit, OnDestroy {
    * This function handles the single actions after taking a card
    */
   getCardActions(){
-    this.playSound('./../assets/audio/cardFlip.mp3');
+    this.playSound('./assets/audio/cardFlip.mp3');
         this.game.currentCard = this.game.stack.pop()!;
         this.game.pickCardAnimation = true;
         this.setCurrentPlayer();
@@ -225,7 +225,7 @@ export class GameComponent implements OnInit, OnDestroy {
    * into the stack, shuffles them and sets the played cards stack to 0.
    */
   shuffleAndResetCards() {
-    this.playSound('./../assets/audio/shuffleCards.mp3');
+    this.playSound('./assets/audio/shuffleCards.mp3');
     if (!this.game.pickCardAnimation) {
       this.game.stack.push(...this.game.playedCards);
       this.shuffleArray(this.game.stack);

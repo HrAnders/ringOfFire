@@ -108,7 +108,7 @@ export class DialogAddPlayerComponent implements OnInit {
     for (let i = 1; i < 51; i++) {
       this.avatars.push({
         value: i,
-        viewValue: '/assets/img/avatars_withbg/' + i + '.png',
+        viewValue: 'assets/img/avatars_withbg/' + i + '.png',
         name: this.names[i - 1],
       });
     }
