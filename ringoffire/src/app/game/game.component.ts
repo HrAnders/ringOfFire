@@ -1,4 +1,10 @@
-import { Component, Injectable, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  Injectable,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 import {
   Firestore,
   collectionData,
@@ -25,7 +31,6 @@ import { onSnapshot } from '@firebase/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { AddingPlayerService } from '../add-player-service/adding-player.service';
 
-
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -40,7 +45,20 @@ export class GameComponent implements OnInit, OnDestroy {
   firestore: Firestore = inject(Firestore);
   isSmallScreen: boolean = false;
 
-  constructor(private route: ActivatedRoute, public dialog: MatDialog, private addingPlayerService: AddingPlayerService) {
+  /**
+   *
+   * @param route : ref for routing module
+   * @param dialog : ref for dialog module
+   * @param addingPlayerService : ref for addingPlayerService
+   */
+  constructor(
+    private route: ActivatedRoute,
+    public dialog: MatDialog,
+    private addingPlayerService: AddingPlayerService
+  ) {
+    /**
+     * Initializing unsubGamesList and unsubSingleDoc
+     */
     this.unsubGamesList = onSnapshot(this.getGamesRef(), (list: any) => {
       list.forEach((element: any) => {
         //console.log(element.data());
@@ -53,16 +71,22 @@ export class GameComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Screensize checking for possible css adjustments and fetching of game data
+   */
   ngOnInit(): void {
-    //route gibt url-rest zurück --> dieser ist gleichzeitig die firebase-id und kann
-    // so über einen snapshot-listener das zugehörige spiel anzeigen und updaten
-
-
     this.checkScreenSize();
     window.addEventListener('resize', () => {
       this.checkScreenSize();
     });
-    
+
+    this.getCurrentGame();
+  }
+
+  /**
+   * This function fetches the game data according to the firebase id
+   */
+  getCurrentGame() {
     this.route.params.subscribe((params) => {
       this.unsubSingleDoc = onSnapshot(
         this.getSingleDocRef('games', params['id']),
@@ -71,32 +95,58 @@ export class GameComponent implements OnInit, OnDestroy {
           this.currentId = params['id'];
           localStorage.setItem('id', this.currentId);
           if (gameData) {
-            this.game.currentPlayer = gameData['currentPlayer'];
-            this.game.playedCards = gameData['playedCards'];
-            this.game.players = (gameData['players']);
-            this.game.stack = gameData['stack'];
-            this.game.pickCardAnimation = gameData['pickCardAnimation'];
-            this.game.currentCard = gameData['currentCard'];
-            this.game.avatarId = (gameData['avatarId']);
+            this.setGameData(gameData);
           }
         }
       );
     });
   }
 
+  /**
+   * 
+   * @param gameData : Object from firebase holding the game data of the current game
+   */
+  setGameData(gameData: any) {
+    this.game.currentPlayer = gameData['currentPlayer'];
+    this.game.playedCards = gameData['playedCards'];
+    this.game.players = gameData['players'];
+    this.game.stack = gameData['stack'];
+    this.game.pickCardAnimation = gameData['pickCardAnimation'];
+    this.game.currentCard = gameData['currentCard'];
+    this.game.avatarId = gameData['avatarId'];
+  }
+
+  /**
+   * Stopping listeners on destroy
+   */
   ngOnDestroy(): void {
     this.unsubGamesList();
     this.unsubSingleDoc();
   }
 
+  /**
+   * 
+   * @returns {collection}: collection reference of the games from firebase
+   * This function returns a reference of the games collection from firebase
+   */
   getGamesRef() {
     return collection(this.firestore, 'games');
   }
 
+  /**
+   * 
+   * @returns {doc}: document reference of single games from firebase specified by id
+   * This function returns a reference of a single game from firebase specified by id
+   */
   getSingleDocRef(colId: string, docId: string) {
     return doc(collection(this.firestore, colId), docId);
   }
 
+  /**
+   * 
+   * @param item {object}: A new game object
+   * This function adds a new game document to the firestore
+   */
   async addGame(item: {}) {
     await addDoc(this.getGamesRef(), item)
       .catch((err) => {
@@ -108,6 +158,9 @@ export class GameComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * This function updates the current game state according to the id
+   */
   async updateGame() {
     if (this.currentId) {
       try {
@@ -122,69 +175,93 @@ export class GameComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * This function holds a boolean to the current screen size and checks if it is greater or lower than 930px
+   */
   checkScreenSize() {
     this.isSmallScreen = window.innerWidth <= 930; // Hier können Sie den gewünschten Schwellenwert für geringere Bildschirmgröße festlegen
   }
 
+  /**
+   * This function handles the behaviour after taking a card
+   */
   takeCard() {
     if (this.game.players.length < 2) {
-      console.log("Please add some players to the game")
+      console.log('Please add some players to the game');
+    } else {
+      if (!this.game.pickCardAnimation && this.game.stack.length > 0) {
+        this.getCardActions()
+      }
     }
-    else{
-      if (!this.game.pickCardAnimation && this.game.stack.length>0 ) {
-        this.playSound('./../assets/audio/cardFlip.mp3')
+  }
+
+  /**
+   * This function handles the single actions after taking a card
+   */
+  getCardActions(){
+    this.playSound('./../assets/audio/cardFlip.mp3');
         this.game.currentCard = this.game.stack.pop()!;
         this.game.pickCardAnimation = true;
-        //console.log(this.game.playedCards);
-  
-        this.game.currentPlayer++;
-        this.game.currentPlayer =
-          this.game.currentPlayer % this.game.players.length;
-  
+        this.setCurrentPlayer();
         this.updateGame();
-  
         setTimeout(() => {
           this.game.playedCards.push(this.game.currentCard);
           this.game.pickCardAnimation = false;
           this.updateGame();
         }, 1000);
-      }
-    }
-    
   }
 
+  /**
+   * This function handles the current player state after taking a card
+   */
+  setCurrentPlayer(){
+    this.game.currentPlayer++;
+    this.game.currentPlayer =
+    this.game.currentPlayer % this.game.players.length;
+  }
+
+  /**
+   * This function handles the shuffling after all cards have been played out. It pushes all cards from the played cards
+   * into the stack, shuffles them and sets the played cards stack to 0.
+   */
   shuffleAndResetCards() {
-    this.playSound('./../assets/audio/shuffleCards.mp3')
+    this.playSound('./../assets/audio/shuffleCards.mp3');
     if (!this.game.pickCardAnimation) {
-      // Füge alle Karten aus playedCards in den Stack ein
       this.game.stack.push(...this.game.playedCards);
-  
-      // Mische die Karten im Stack zufällig
       this.shuffleArray(this.game.stack);
-  
-      // Leere playedCards
       this.game.playedCards = [];
-  
-      // Aktualisiere das Spiel in der Firebase-Datenbank
       this.updateGame();
     }
   }
-  
-  // Hilfsfunktion zum Mischen eines Arrays (Fisher-Yates-Algorithmus)
+
+  /**
+   * 
+   * @param array {array}: Card array
+   * This function takes all elements of the array and mixes them (Fisher-Yates-Algorithm)
+   */
   shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
-  
-  playSound(soundSrc:any){
+
+  /**
+   * 
+   * @param soundSrc {string}: Path to sound file
+   * This function plays the sound out of a certain path
+   */
+  playSound(soundSrc: any) {
     const sound = new Audio();
     sound.src = soundSrc;
     sound.load();
     sound.play();
   }
 
+  /**
+   * This function handles the opening and closing of the dialog window. It listens to its transferred player
+   * object and pushes the values into firestore documents
+   */
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
 
@@ -197,5 +274,4 @@ export class GameComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 }

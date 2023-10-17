@@ -1,7 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { GameComponent } from '../game/game.component';
-import { AddingPlayerService, Player } from '../add-player-service/adding-player.service';
+import {
+  AddingPlayerService,
+  Player,
+} from '../add-player-service/adding-player.service';
 
 interface Avatar {
   value: number;
@@ -18,39 +21,6 @@ export class DialogAddPlayerComponent implements OnInit {
   avatars: Avatar[] = [];
   selectedAvatar: number = 0;
   player: Player = new Player();
-
-  constructor(
-    public dialogRef: MatDialogRef<DialogAddPlayerComponent>,
-    private addingPlayerService: AddingPlayerService
-  ) {}
-
-  async ngOnInit(): Promise<void> {
-    this.getAvatarImages();
-  }
-
-  async setPlayer() {
-    this.player.name = this.name;
-    this.player.id = this.selectedAvatar;
-    //this.addingPlayerService.addPlayer(this.player); // potentially for later expansion of player class
-    this.dialogRef.close(this.player); //beim Schließen des Dialogs wird das erstellte player-Objekt returned
-    //die game-component kann dann durch die subscription darauf zugreifen
-  }
-
-  onNoClick() {
-    this.dialogRef.close();
-  }
-
-  getAvatarImages() {
-    for (let i = 1; i < 51; i++) {
-      this.avatars.push({
-        value: i,
-        viewValue: '/assets/img/avatars_withbg/' + i + '.png',
-        name: this.names[i - 1],
-      });
-    }
-  }
-
- 
 
   names = [
     'Elowen',
@@ -104,4 +74,43 @@ export class DialogAddPlayerComponent implements OnInit {
     'Finlo',
     'Danilo',
   ];
+
+  constructor(
+    public dialogRef: MatDialogRef<DialogAddPlayerComponent>,
+    private addingPlayerService: AddingPlayerService
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    this.getAvatarImages();
+  }
+
+  /**
+   * This function sets the values of the player object an returns the object to the corresponding component
+   */
+  async setPlayer() {
+    this.player.name = this.name;
+    this.player.id = this.selectedAvatar;
+    //this.addingPlayerService.addPlayer(this.player); // potentially for later expansion of player class
+    this.dialogRef.close(this.player);
+  }
+
+  /**
+   * This function handles the case of a user pressing the "No thanks" button in the dialog
+   */
+  onNoClick() {
+    this.dialogRef.close();
+  }
+
+  /**
+   * This function iterates through the avatar pictures folder and pushes the objects into the avatars-array
+   */
+  getAvatarImages() {
+    for (let i = 1; i < 51; i++) {
+      this.avatars.push({
+        value: i,
+        viewValue: '/assets/img/avatars_withbg/' + i + '.png',
+        name: this.names[i - 1],
+      });
+    }
+  }
 }

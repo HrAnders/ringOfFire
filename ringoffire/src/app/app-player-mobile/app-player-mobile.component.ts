@@ -5,6 +5,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './app-player-mobile.component.html',
   styleUrls: ['./app-player-mobile.component.scss']
 })
+
 export class AppPlayerMobileComponent {
   @Input() name: any;
   @Input() playerActive: boolean = false;
@@ -14,7 +15,9 @@ export class AppPlayerMobileComponent {
     
   }
 
-
+  /**
+   * This function returns a random avatar picture --> currently not used
+   */
   getRandomAvatar(){
     const randomNumber = Math.floor(Math.random() * (50 - 1 + 1)) + 1;
     this.avatar = 'assets/img/avatars_withbg/' + randomNumber + '.png';

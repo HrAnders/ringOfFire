@@ -16,7 +16,7 @@ export class Player {
 }
 
 export class AddingPlayerService {
-  //private players: Player[] = [];
+  //private players: Player[] = [];  --> potentially for more game information to be transferred
 
   /* addPlayer(player: Player) {
     this.players.push(player);

@@ -14,7 +14,9 @@ export class PlayerComponent implements OnInit {
     
   }
 
-
+  /**
+   * This function returns a random avatar --> currenly not used
+   */
   getRandomAvatar(){
     const randomNumber = Math.floor(Math.random() * (50 - 1 + 1)) + 1;
     this.avatar = 'assets/img/avatars_withbg/' + randomNumber + '.png';

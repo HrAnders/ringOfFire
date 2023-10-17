@@ -20,18 +20,28 @@ export class StartScreenComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.mainTheme.src = "./../assets/audio/main-theme.mp3";
-    this.mainTheme.load();
-    this.mainTheme.loop = true;
-    this.mainTheme.play();
+    this.playTheme();
   }
 
   ngOnDestroy(): void {
     this.mainTheme.pause();
   }
 
+  /**
+   * This function handles the main theme playing
+   */
+  playTheme(){
+    this.mainTheme.src = "./../assets/audio/main-theme.mp3";
+    this.mainTheme.load();
+    this.mainTheme.loop = true;
+    this.mainTheme.play();
+  }
+
+  /**
+   * This function handles the initialization of a new game object and forwards to the specified url
+   */
   async newGame(){
-    //Start game
+    
     let game = new Game();
     await this.util.addGame(game.toJson());
     const id = this.util.currentId;
